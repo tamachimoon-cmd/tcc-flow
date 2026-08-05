@@ -1,0 +1,15 @@
+{
+  "name": "tcc-flow",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @tcc-flow/web",
+    "build": "npm run build --workspace @tcc-flow/web",
+    "lint": "npm run lint --workspace @tcc-flow/web",
+    "typecheck": "npm run typecheck --workspace @tcc-flow/web"
+  }
+}

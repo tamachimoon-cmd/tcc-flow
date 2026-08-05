@@ -12,8 +12,6 @@ Estudantes frequentemente iniciam o TCC com temas amplos, cronogramas frágeis, 
 
 ## Solução
 
-O TCC Flow conduz o estudante por uma jornada estruturada:
-
 ```text
 Criar projeto
   → definir e delimitar o tema
@@ -27,21 +25,36 @@ Criar projeto
   → simular a banca
 ```
 
-## Protótipo navegável
+## Aplicação Next.js
 
-O primeiro protótipo do fluxo principal está disponível em [`prototype/index.html`](prototype/index.html).
+A aplicação web está em [`apps/web`](apps/web) e utiliza Next.js, React e TypeScript.
 
-Ele demonstra:
+Rotas implementadas:
 
-- landing page;
-- dashboard;
-- criação de projeto;
-- assistente de tema;
-- construtor do pré-projeto;
-- orientação contextual da IA;
-- distinção entre sugestão automática e decisão confirmada pelo estudante.
+- `/` — landing page;
+- `/dashboard` — visão geral do projeto;
+- `/projetos/novo` — criação do contexto acadêmico;
+- `/projetos/demo/tema` — assistente de tema;
+- `/projetos/demo/pre-projeto` — editor e auditoria inicial.
 
-Para executar localmente, consulte [`prototype/README.md`](prototype/README.md).
+Para executar:
+
+```bash
+npm install
+npm run dev
+```
+
+Validação:
+
+```bash
+npm run typecheck
+npm run lint
+npm run build
+```
+
+## Protótipo anterior
+
+O protótipo estático original continua disponível em [`prototype/index.html`](prototype/index.html) como referência histórica do fluxo inicial.
 
 ## Diferenciais
 
@@ -54,13 +67,7 @@ Para executar localmente, consulte [`prototype/README.md`](prototype/README.md).
 - preparação de apresentação e simulação de banca;
 - princípios explícitos de integridade acadêmica.
 
-## Público inicial
-
-O MVP será direcionado ao **estudante**. Recursos para orientadores e instituições serão adicionados em fases posteriores.
-
 ## Escopo do MVP
-
-A primeira versão deverá permitir:
 
 1. criar uma conta e um projeto acadêmico;
 2. informar curso, instituição, tipo de trabalho e prazo;
@@ -71,14 +78,13 @@ A primeira versão deverá permitir:
 7. acompanhar o progresso em um dashboard;
 8. manter histórico das sugestões e decisões.
 
-## Arquitetura proposta
+## Arquitetura
 
 - **Aplicação:** Next.js e TypeScript;
-- **Banco de dados:** PostgreSQL;
-- **Arquivos:** armazenamento compatível com S3;
-- **IA:** camada de orquestração independente de provedor;
-- **Busca semântica:** extensão vetorial no banco ou serviço dedicado;
-- **Autenticação:** solução compatível com credenciais e provedores sociais.
+- **Banco de dados planejado:** PostgreSQL;
+- **Arquivos planejados:** armazenamento compatível com S3;
+- **IA planejada:** camada de orquestração independente de provedor;
+- **Estratégia:** monólito modular.
 
 A arquitetura detalhada está em [`docs/architecture/overview.md`](docs/architecture/overview.md).
 
@@ -96,9 +102,9 @@ A arquitetura detalhada está em [`docs/architecture/overview.md`](docs/architec
 
 ## Estado do projeto
 
-**Fase:** prototipação do MVP.
+**Fase:** fundação executável do MVP.
 
-A visão, o escopo, o fluxo principal, os wireframes e a base visual estão documentados. O próximo passo é converter o protótipo em uma aplicação Next.js com componentes reutilizáveis e persistência de dados.
+A aplicação Next.js possui rotas navegáveis, componentes interativos, design responsivo e validação automatizada por GitHub Actions. Os dados ainda são demonstrativos e locais; autenticação, persistência e integração real com IA pertencem às próximas fases.
 
 ## Princípio central
 
