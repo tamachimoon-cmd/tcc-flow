@@ -27,6 +27,22 @@ Criar projeto
   → simular a banca
 ```
 
+## Protótipo navegável
+
+O primeiro protótipo do fluxo principal está disponível em [`prototype/index.html`](prototype/index.html).
+
+Ele demonstra:
+
+- landing page;
+- dashboard;
+- criação de projeto;
+- assistente de tema;
+- construtor do pré-projeto;
+- orientação contextual da IA;
+- distinção entre sugestão automática e decisão confirmada pelo estudante.
+
+Para executar localmente, consulte [`prototype/README.md`](prototype/README.md).
+
 ## Diferenciais
 
 - orientação contextual baseada no projeto inteiro;
@@ -71,15 +87,18 @@ A arquitetura detalhada está em [`docs/architecture/overview.md`](docs/architec
 - [Visão do produto](docs/product/vision.md)
 - [Escopo do MVP](docs/product/mvp.md)
 - [Fluxo do usuário](docs/product/user-flow.md)
+- [Wireframes](docs/product/wireframes.md)
+- [Base visual](docs/product/design-system.md)
+- [Conceito de interface](docs/product/ui-concept.md)
 - [Arquitetura inicial](docs/architecture/overview.md)
 - [Roadmap](docs/product/roadmap.md)
 - [Integridade acadêmica](docs/governance/academic-integrity.md)
 
 ## Estado do projeto
 
-**Fase:** descoberta e definição do produto.
+**Fase:** prototipação do MVP.
 
-Ainda não há uma versão funcional. O repositório está sendo estruturado para que decisões de produto, arquitetura e integridade acadêmica sejam registradas antes da implementação.
+A visão, o escopo, o fluxo principal, os wireframes e a base visual estão documentados. O próximo passo é converter o protótipo em uma aplicação Next.js com componentes reutilizáveis e persistência de dados.
 
 ## Princípio central
 
