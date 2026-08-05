@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TCC Flow — Protótipo do MVP</title>
+  <style>
+    :root {
+      --bg: #08111f;
+      --panel: #101c2d;
+      --panel-2: #16243a;
+      --line: #2a3a52;
+      --text: #f5f7fb;
+      --muted: #aeb9c9;
+      --primary: #7c5cff;
+      --primary-2: #3dd6d0;
+      --ok: #39d98a;
+      --warn: #f7b955;
+      --danger: #ff6b7a;
+      --radius: 18px;
+      --shadow: 0 18px 45px rgba(0, 0, 0, .26);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top right, rgba(124,92,255,.18), transparent 28%), var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+
+    .app { min-height: 100vh; }
+    .screen { display: none; min-height: 100vh; }
+    .screen.active { display: block; }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 18px 28px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(8,17,31,.88);
+      backdrop-filter: blur(18px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: -.02em; }
+    .brand-mark {
+      width: 38px; height: 38px; border-radius: 12px;
+      display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: #07101b;
+      font-weight: 900;
+      box-shadow: var(--shadow);
+    }
+
+    .nav-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      padding: 11px 16px;
+      border-radius: 12px;
+      font-weight: 700;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn.primary { background: linear-gradient(135deg, var(--primary), #5d7cff); border: 0; }
+    .btn.secondary { background: rgba(61,214,208,.12); border-color: rgba(61,214,208,.45); }
+    .btn.ghost { background: transparent; }
+    .btn.block { width: 100%; }
+
+    .hero {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 88px 28px 50px;
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 46px;
+      align-items: center;
+    }
+    .eyebrow { color: var(--primary-2); font-weight: 800; text-transform: uppercase; font-size: .78rem; letter-spacing: .14em; }
+    h1 { font-size: clamp(2.5rem, 6vw, 5.7rem); line-height: .98; margin: 14px 0 22px; letter-spacing: -.055em; }
+    h2 { margin: 0 0 12px; letter-spacing: -.03em; }
+    h3 { margin: 0 0 8px; }
+    .lead { font-size: 1.18rem; color: var(--muted); max-width: 700px; line-height: 1.7; }
+    .hero-actions { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
+
+    .preview-card, .card {
+      background: linear-gradient(180deg, rgba(22,36,58,.96), rgba(16,28,45,.96));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .preview-card { padding: 24px; transform: rotate(1deg); }
+    .mini-progress { height: 10px; background: #24344b; border-radius: 99px; overflow: hidden; margin: 14px 0 22px; }
+    .mini-progress > span { display:block; width: 38%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary-2)); }
+    .step-list { display: grid; gap: 12px; }
+    .step-item { display: flex; gap: 12px; padding: 12px; border-radius: 12px; background: rgba(255,255,255,.03); }
+    .step-dot { width: 26px; height: 26px; flex: 0 0 26px; border-radius: 50%; display:grid; place-items:center; background: rgba(124,92,255,.2); color:#c9bdff; font-size:.8rem; }
+
+    .features { max-width: 1180px; margin: 0 auto; padding: 28px 28px 80px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .feature { padding: 24px; }
+    .feature p, .muted { color: var(--muted); line-height: 1.6; }
+
+    .shell { display: grid; grid-template-columns: 250px 1fr; min-height: calc(100vh - 75px); }
+    .sidebar { border-right: 1px solid var(--line); padding: 22px 16px; background: rgba(11,21,36,.9); }
+    .sidebar nav { display: grid; gap: 8px; }
+    .nav-link { text-align: left; border:0; color: var(--muted); background: transparent; padding: 12px 14px; border-radius: 12px; }
+    .nav-link.active, .nav-link:hover { color: var(--text); background: rgba(124,92,255,.14); }
+    .content { padding: 30px; max-width: 1400px; width: 100%; margin: 0 auto; }
+
+    .page-head { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; margin-bottom: 24px; }
+    .page-head p { margin: 4px 0 0; color: var(--muted); }
+    .grid { display:grid; gap: 18px; }
+    .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .card { padding: 22px; }
+    .stat { font-size: 2rem; font-weight: 800; margin-top: 10px; }
+    .badge { display:inline-flex; gap:6px; align-items:center; border-radius:99px; padding:6px 10px; font-size:.78rem; font-weight:800; background:rgba(124,92,255,.16); color:#c9bdff; }
+    .badge.ok { background: rgba(57,217,138,.14); color:#91f0bc; }
+    .badge.warn { background: rgba(247,185,85,.14); color:#ffd58b; }
+
+    .project-card { display:grid; gap: 16px; }
+    .project-title { font-size:1.18rem; font-weight:800; }
+    .progress { height:12px; background:#24344b; border-radius:99px; overflow:hidden; }
+    .progress span { display:block; height:100%; background:linear-gradient(90deg,var(--primary),var(--primary-2)); }
+    .row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .list { display:grid; gap: 12px; }
+    .list-item { padding: 14px; border-radius: 14px; border:1px solid var(--line); background:rgba(255,255,255,.02); }
+
+    .wizard { max-width: 980px; margin: 0 auto; }
+    .wizard-steps { display:grid; grid-template-columns: repeat(4,1fr); gap:10px; margin-bottom:20px; }
+    .wizard-step { padding:12px; border-radius:12px; border:1px solid var(--line); color:var(--muted); font-size:.86rem; }
+    .wizard-step.active { color:var(--text); border-color:var(--primary); background:rgba(124,92,255,.14); }
+    .form-grid { display:grid; grid-template-columns: repeat(2,1fr); gap:16px; }
+    .field { display:grid; gap:8px; }
+    .field.full { grid-column:1 / -1; }
+    label { font-size:.86rem; font-weight:800; }
+    input, textarea, select {
+      width:100%; border:1px solid var(--line); border-radius:12px; background:#0d1929; color:var(--text); padding:13px 14px; outline:none;
+    }
+    textarea { min-height: 130px; resize: vertical; }
+    input:focus, textarea:focus, select:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(124,92,255,.16); }
+    .form-actions { display:flex; justify-content:space-between; margin-top:20px; gap:12px; }
+
+    .theme-layout { display:grid; grid-template-columns: .72fr 1.28fr; gap:18px; }
+    .suggestion { padding:18px; border:1px solid var(--line); border-radius:16px; margin-bottom:12px; background:rgba(255,255,255,.025); }
+    .suggestion.selected { border-color:var(--primary); background:rgba(124,92,255,.10); }
+    .meta { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0; }
+
+    .preproject-layout { display:grid; grid-template-columns:220px 1fr 300px; gap:18px; }
+    .section-list { display:grid; gap:8px; }
+    .section-btn { border:1px solid transparent; background:transparent; color:var(--muted); text-align:left; padding:12px; border-radius:12px; }
+    .section-btn.active { border-color:var(--primary); background:rgba(124,92,255,.12); color:var(--text); }
+    .ai-panel { border-left:3px solid var(--primary-2); }
+    .ai-note { padding:12px; border-radius:12px; background:rgba(61,214,208,.08); color:#c7fbf8; line-height:1.55; }
+    .warning { padding:12px; border-radius:12px; background:rgba(247,185,85,.10); color:#ffe1a6; line-height:1.55; }
+
+    .toast { position:fixed; right:22px; bottom:22px; background:#15243a; border:1px solid var(--line); padding:14px 16px; border-radius:12px; box-shadow:var(--shadow); display:none; z-index:50; }
+    .toast.show { display:block; }
+
+    @media (max-width: 980px) {
+      .hero, .theme-layout, .preproject-layout { grid-template-columns: 1fr; }
+      .features, .grid.cols-3 { grid-template-columns: 1fr; }
+      .shell { grid-template-columns: 1fr; }
+      .sidebar { display:none; }
+      .preproject-layout .ai-panel { border-left:1px solid var(--line); border-top:3px solid var(--primary-2); }
+    }
+
+    @media (max-width: 680px) {
+      .topbar { padding:14px 16px; }
+      .hero { padding:58px 18px 28px; }
+      .features, .content { padding-left:18px; padding-right:18px; }
+      .form-grid, .grid.cols-2, .wizard-steps { grid-template-columns:1fr; }
+      .page-head { flex-direction:column; }
+      .nav-actions .ghost { display:none; }
+      h1 { font-size:3rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <button class="brand nav-to" data-screen="landing" aria-label="Ir para a página inicial">
+      <span class="brand-mark">TF</span>
+      <span>TCC Flow</span>
+    </button>
+    <div class="nav-actions">
+      <button class="btn ghost nav-to" data-screen="dashboard">Ver demonstração</button>
+      <button class="btn primary nav-to" data-screen="new-project">Começar meu TCC</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="landing" class="screen active">
+      <div class="hero">
+        <div>
+          <div class="eyebrow">Orientação acadêmica com IA</div>
+          <h1>Do tema à banca, sem caminhar no escuro.</h1>
+          <p class="lead">O TCC Flow organiza seu projeto, ajuda a formular cada etapa e verifica se problema, objetivos, metodologia e conclusão realmente conversam entre si.</p>
+          <div class="hero-actions">
+            <button class="btn primary nav-to" data-screen="new-project">Criar meu projeto</button>
+            <button class="btn secondary nav-to" data-screen="dashboard">Explorar protótipo</button>
+          </div>
+        </div>
+        <div class="preview-card" aria-label="Prévia do painel">
+          <div class="row"><strong>Projeto ScriptHub</strong><span class="badge">38% concluído</span></div>
+          <div class="mini-progress"><span></span></div>
+          <div class="step-list">
+            <div class="step-item"><span class="step-dot">✓</span><div><strong>Tema definido</strong><div class="muted">Plataforma de gestão de scripts B2B</div></div></div>
+            <div class="step-item"><span class="step-dot">2</span><div><strong>Problema de pesquisa</strong><div class="muted">Próxima etapa recomendada</div></div></div>
+            <div class="step-item"><span class="step-dot">3</span><div><strong>Objetivos</strong><div class="muted">Aguardando definição do problema</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="features">
+        <article class="card feature"><h3>Planejamento guiado</h3><p>O sistema transforma o prazo final em uma sequência clara de entregas, dependências e prioridades.</p></article>
+        <article class="card feature"><h3>Coerência acadêmica</h3><p>A IA aponta objetivos sem método, conclusões sem evidência e outras criaturas frequentes da fauna universitária.</p></article>
+        <article class="card feature"><h3>Autoria transparente</h3><p>Sugestões da IA ficam separadas das decisões confirmadas pelo estudante e das informações extraídas de fontes.</p></article>
+      </div>
+    </section>
+
+    <section id="dashboard" class="screen">
+      <div class="shell">
+        <aside class="sidebar">
+          <nav>
+            <button class="nav-link active">Visão geral</button>
+            <button class="nav-link nav-to" data-screen="theme-assistant">Jornada</button>
+            <button class="nav-link nav-to" data-screen="preproject">Pré-projeto</button>
+            <button class="nav-link">Estrutura</button>
+            <button class="nav-link">Fontes</button>
+            <button class="nav-link">Auditoria</button>
+            <button class="nav-link">Banca virtual</button>
+          </nav>
+        </aside>
+        <div class="content">
+          <div class="page-head">
+            <div><h2>Bom dia, Sr. Marques</h2><p>Seu projeto está caminhando. Milagre estatisticamente raro em TCCs.</p></div>
+            <button class="btn primary nav-to" data-screen="new-project">Novo projeto</button>
+          </div>
+
+          <div class="grid cols-3">
+            <article class="card"><span class="muted">Progresso geral</span><div class="stat">38%</div><div class="progress"><span style="width:38%"></span></div></article>
+            <article class="card"><span class="muted">Prazo final</span><div class="stat">120 dias</div><span class="badge ok">Dentro do prazo</span></article>
+            <article class="card"><span class="muted">Pendências críticas</span><div class="stat">2</div><span class="badge warn">Revisar problema</span></article>
+          </div>
+
+          <div class="grid cols-2" style="margin-top:18px">
+            <article class="card project-card">
+              <div class="row"><div><div class="project-title">ScriptHub</div><div class="muted">Gestão e padronização de scripts em operações B2B</div></div><span class="badge">Em construção</span></div>
+              <div class="progress"><span style="width:38%"></span></div>
+              <div class="row"><span class="muted">Próxima ação</span><strong>Revisar o problema de pesquisa</strong></div>
+              <button class="btn primary nav-to" data-screen="preproject">Continuar projeto</button>
+            </article>
+            <article class="card">
+              <h3>Alertas acadêmicos</h3>
+              <div class="list" style="margin-top:14px">
+                <div class="list-item"><span class="badge warn">Coerência</span><p class="muted">O objetivo específico sobre redução de erros ainda não possui método de medição.</p></div>
+                <div class="list-item"><span class="badge">Fonte</span><p class="muted">A justificativa contém duas afirmações que precisarão de referência.</p></div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="new-project" class="screen">
+      <div class="content wizard">
+        <div class="page-head"><div><span class="eyebrow">Novo projeto</span><h2>Conte o contexto antes de pedir magia à IA</h2><p>Informações melhores produzem sugestões menos genéricas. Uma descoberta tecnológica chocante.</p></div></div>
+        <div class="wizard-steps">
+          <div class="wizard-step active">1. Curso</div><div class="wizard-step">2. Instituição</div><div class="wizard-step">3. Trabalho</div><div class="wizard-step">4. Prazo</div>
+        </div>
+        <form class="card" id="project-form">
+          <div class="form-grid">
+            <div class="field"><label for="course">Curso</label><input id="course" value="Pós-graduação em IA e Ciência de Dados" /></div>
+            <div class="field"><label for="level">Nível acadêmico</label><select id="level"><option>Graduação</option><option selected>Pós-graduação</option><option>MBA</option><option>Técnico</option></select></div>
+            <div class="field"><label for="institution">Instituição</label><input id="institution" placeholder="Nome da instituição" /></div>
+            <div class="field"><label for="standard">Norma</label><select id="standard"><option selected>ABNT</option><option>APA</option><option>Vancouver</option><option>Manual próprio</option></select></div>
+            <div class="field"><label for="work-type">Tipo de trabalho</label><select id="work-type"><option selected>Projeto tecnológico aplicado</option><option>Monografia</option><option>Artigo científico</option><option>Estudo de caso</option></select></div>
+            <div class="field"><label for="deadline">Prazo final</label><input id="deadline" type="date" value="2026-12-12" /></div>
+            <div class="field full"><label for="interest">Área de interesse</label><textarea id="interest">Inteligência artificial, gestão do conhecimento, desenvolvimento de software e operações técnicas B2B.</textarea></div>
+          </div>
+          <div class="form-actions"><button type="button" class="btn ghost nav-to" data-screen="landing">Cancelar</button><button class="btn primary" type="submit">Analisar possibilidades</button></div>
+        </form>
+      </div>
+    </section>
+
+    <section id="theme-assistant" class="screen">
+      <div class="content">
+        <div class="page-head"><div><span class="eyebrow">Etapa 1 de 6</span><h2>Escolha e delimite o tema</h2><p>A IA sugere. O estudante decide. Essa separação deveria ser óbvia, mas aqui estamos.</p></div><button class="btn ghost nav-to" data-screen="dashboard">Salvar e sair</button></div>
+        <div class="theme-layout">
+          <aside class="card">
+            <h3>Seu contexto</h3>
+            <div class="list" style="margin-top:14px">
+              <div class="list-item"><strong>Curso</strong><div class="muted">IA e Ciência de Dados</div></div>
+              <div class="list-item"><strong>Interesses</strong><div class="muted">IA, conhecimento, software e B2B</div></div>
+              <div class="list-item"><strong>Tipo</strong><div class="muted">Projeto tecnológico aplicado</div></div>
+            </div>
+          </aside>
+          <div class="card">
+            <div class="row"><h3>Sugestões de tema</h3><span class="badge">Gerado pela IA</span></div>
+            <div class="suggestion selected" data-theme="ScriptHub: plataforma inteligente para padronização e gestão de scripts em operações de telecomunicações B2B">
+              <div class="row"><strong>ScriptHub: plataforma inteligente para padronização e gestão de scripts em operações de telecomunicações B2B</strong><span class="badge ok">Alta aderência</span></div>
+              <div class="meta"><span class="badge">Dificuldade média</span><span class="badge">Dados acessíveis</span><span class="badge warn">Exige recorte</span></div>
+              <p class="muted">Permite desenvolver um produto funcional e medir tempo de consulta, taxa de erro e percepção de usabilidade.</p>
+            </div>
+            <div class="suggestion" data-theme="Uso de IA generativa na classificação de chamados técnicos em equipes B2B">
+              <div class="row"><strong>Uso de IA generativa na classificação de chamados técnicos em equipes B2B</strong><span class="badge">Boa aderência</span></div>
+              <div class="meta"><span class="badge">Dificuldade média</span><span class="badge warn">Necessita base de chamados</span></div>
+              <p class="muted">Tema viável, mas depende de acesso a dados adequados e cuidados com informações empresariais.</p>
+            </div>
+            <div class="suggestion" data-theme="Copiloto acadêmico baseado em IA para desenvolvimento orientado de TCCs">
+              <div class="row"><strong>Copiloto acadêmico baseado em IA para desenvolvimento orientado de TCCs</strong><span class="badge">Experimental</span></div>
+              <div class="meta"><span class="badge">Alta inovação</span><span class="badge warn">Escopo amplo</span></div>
+              <p class="muted">A própria plataforma TCC Flow pode ser o objeto do trabalho, desde que a avaliação seja bem delimitada.</p>
+            </div>
+            <div class="field" style="margin-top:16px"><label for="selected-theme">Tema selecionado e editável</label><textarea id="selected-theme">ScriptHub: plataforma inteligente para padronização e gestão de scripts em operações de telecomunicações B2B</textarea></div>
+            <div class="form-actions"><button class="btn ghost nav-to" data-screen="new-project">Voltar</button><button class="btn primary nav-to" data-screen="preproject">Confirmar tema</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="preproject" class="screen">
+      <div class="content">
+        <div class="page-head"><div><span class="eyebrow">Pré-projeto</span><h2>Construa a lógica antes de acumular páginas</h2><p>Problema, objetivos e método precisam formar um sistema, não uma reunião de frases academicamente vestidas.</p></div><button class="btn primary" id="save-preproject">Salvar alterações</button></div>
+        <div class="preproject-layout">
+          <aside class="card">
+            <div class="section-list">
+              <button class="section-btn active">Tema <span class="badge ok">✓</span></button>
+              <button class="section-btn">Delimitação <span class="badge ok">✓</span></button>
+              <button class="section-btn">Problema <span class="badge warn">!</span></button>
+              <button class="section-btn">Objetivo geral</button>
+              <button class="section-btn">Objetivos específicos</button>
+              <button class="section-btn">Justificativa</button>
+              <button class="section-btn">Metodologia</button>
+            </div>
+          </aside>
+          <section class="card">
+            <div class="row"><h3>Problema de pesquisa</h3><span class="badge">Editado pelo estudante</span></div>
+            <p class="muted">Formule uma pergunta investigável, delimitada e compatível com os dados que você realmente conseguirá coletar.</p>
+            <div class="field" style="margin-top:16px"><label for="problem">Pergunta principal</label><textarea id="problem">Como uma plataforma centralizada de gestão e padronização de scripts pode reduzir o tempo de consulta e a incidência de erros em operações técnicas B2B?</textarea></div>
+            <div class="warning" style="margin-top:14px"><strong>Pendência:</strong> defina como “incidência de erros” será medida durante a avaliação.</div>
+            <div class="form-actions"><button class="btn ghost nav-to" data-screen="theme-assistant">Voltar ao tema</button><button class="btn secondary" id="accept-problem">Confirmar problema</button></div>
+          </section>
+          <aside class="card ai-panel">
+            <div class="row"><h3>Flow IA</h3><span class="badge">Orientador</span></div>
+            <div class="ai-note" style="margin-top:14px">A pergunta está delimitada por contexto e solução, mas contém dois resultados: tempo de consulta e erros. Isso é válido desde que ambos tenham métricas definidas.</div>
+            <h3 style="margin-top:18px">Sugestão</h3>
+            <p class="muted">Use tempo médio por tarefa e número de falhas por cenário de teste. Compare o método atual com o uso do protótipo.</p>
+            <button class="btn block secondary" id="apply-suggestion">Aplicar melhoria sugerida</button>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+  const screens = document.querySelectorAll('.screen');
+  const toast = document.getElementById('toast');
+
+  function showScreen(id) {
+    screens.forEach(screen => screen.classList.toggle('active', screen.id === id));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function notify(message) {
+    toast.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(window.toastTimer);
+    window.toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+  }
+
+  document.querySelectorAll('.nav-to').forEach(button => {
+    button.addEventListener('click', () => showScreen(button.dataset.screen));
+  });
+
+  document.getElementById('project-form').addEventListener('submit', event => {
+    event.preventDefault();
+    notify('Contexto salvo. A IA analisou as possibilidades.');
+    setTimeout(() => showScreen('theme-assistant'), 420);
+  });
+
+  document.querySelectorAll('.suggestion').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.suggestion').forEach(item => item.classList.remove('selected'));
+      card.classList.add('selected');
+      document.getElementById('selected-theme').value = card.dataset.theme;
+    });
+  });
+
+  document.querySelectorAll('.section-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll('.section-btn').forEach(item => item.classList.remove('active'));
+      button.classList.add('active');
+      notify('Wireframe: a edição desta seção entra na próxima iteração.');
+    });
+  });
+
+  document.getElementById('apply-suggestion').addEventListener('click', () => {
+    document.getElementById('problem').value = 'Em que medida o uso de uma plataforma centralizada de gestão e padronização de scripts reduz o tempo médio de consulta e o número de erros em tarefas técnicas B2B, quando comparado ao processo atual?';
+    notify('Sugestão aplicada. A decisão ainda precisa ser confirmada pelo estudante.');
+  });
+
+  document.getElementById('accept-problem').addEventListener('click', () => notify('Problema confirmado pelo estudante.'));
+  document.getElementById('save-preproject').addEventListener('click', () => notify('Pré-projeto salvo no protótipo.'));
+</script>
+</body>
+</html>
